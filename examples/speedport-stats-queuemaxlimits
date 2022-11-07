@@ -1,0 +1,37 @@
+{
+    /system script run "speedport-stats"; global speedportStats;
+
+    :local dslStatus
+    :local dslDownstream
+    :local dslDownstreamBits
+    :local dslUpstream
+    :local dslUpstreamBits
+
+    :set dslStatus ($speedportStats->"dsl_status")
+    :set dslDownstream ($speedportStats->"dsl_downstream")
+    :set dslUpstream ($speedportStats->"dsl_upstream")
+
+    :tonum dslDownstream
+    :tonum dslUpstream
+
+    :put ($dslStatus,$dslDownstream,$dslUpstream)
+    
+    # set queue limits
+    :if ($dslStatus = "online" and $dslDownstream > 0 and $dslUpstream > 0) do={
+        :set dslDownstreamBits ($dslDownstream * 1000)
+        :set dslUpstreamBits ($dslUpstream * 1000)
+
+        :local previousMaxLimitDown [/queue tree get [find name="WAN Down"] max-limit]
+        :local previousMaxLimitUpload [/queue tree get [find name="WAN Upload"] max-limit]
+        :tonum previousMaxLimitDown
+        :tonum previousMaxLimitUpload
+
+        :if ($dslDownstreamBits != $previousMaxLimitDown) do={
+            /queue tree set [find name="WAN Down"] max-limit=$dslDownstreamBits
+        }
+
+        :if ($dslUpstreamBits != $previousMaxLimitUpload) do={
+            /queue tree set [find name="WAN Upload"] max-limit=$dslUpstreamBits
+        }
+    }
+}
