@@ -1,27 +1,29 @@
 {
-    # Config
-    :local speedportAddress "192.168.1.1"
+    :global fetchSpeedportStats do={
+        :if (:typeof[$speedportAddress] = "nil" or $speedportAddress = "") do={ :error "Speedport address is missing" }
 
-    # Load JSON Parser
-    /system script run "JParseFunctions"; global JSONLoad; global JSONLoads; global JSONUnload
+        # Load JSON Parser
+        /system script run "JParseFunctions"; global JSONLoad; global JSONLoads; global JSONUnload
 
-    # Request Speedport stats
-    :local result ([/tool fetch http-method=get mode=http http-header-field="Accept-Language: el-GR" url="http://$speedportAddress/data/Status.json" as-value output=user])
+        # Request Speedport stats
+        :local result ([/tool fetch http-method=get mode=http http-header-field="Accept-Language: el-GR" url="http://$speedportAddress/data/Status.json" as-value output=user])
 
-    :if ($result->"status" = "finished") do={
-        :global JSONIn ($result->"data")
-        :global fJParse
-        :global JParseOut [$fJParse]
-        :local results ($JParseOut)
+        :if ($result->"status" = "finished") do={
+            # Parse JSON
+            :global JSONIn ($result->"data")
+            :global fJParse
+            :global JParseOut [$fJParse]
+            :local results ($JParseOut)
 
-        :if ([:len $results]>0) do={
-            :global speedportStats ({})
-            
-            :foreach k,v in=$results do={
-                :foreach sn,sv in=$v do={
-                    :set ($speedportStats->$sv) ($v->"varvalue")
+            :if ([:len $results]>0) do={
+                :global speedport ({})
+
+                :foreach k,v in=$results do={
+                    :foreach sn,sv in=$v do={
+                        :set ($speedport->$sv) ($v->"varvalue")
+                    }
                 }
-            }
-        }
+            } else={ :error "Speedport response is empty" }
+        } else={ :error "Speedport request failed" }
     }
 }

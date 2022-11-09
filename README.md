@@ -2,45 +2,19 @@
 
 A Mikrotik script that fetch and parses DSL line and device stats from the Speedport Plus modem/router.
 
+Tested on RouterOS 7.6 and Speedport Plus (ISP: Cosmote, Firmware: 09022001.00.035_OTE10)
+
 Usage:
 ```
 # Load script
-/system script run "speedport-stats"; global speedportStats;
+/system script run "speedport-stats"; global speedport; global speedportFetchStats;
 
-# Use data directly
-:put ($speedportStats->"dsl_status")
+# Fetch Speedport stats
+$speedportFetchStats speedportAddress=192.168.1.1
 
+# Use data
+:put ($speedport->"dsl_status")
 ```
-Example:
-
-	{
-	    /system script run "speedport-stats"; global speedportStats;
-
-	    :local dslStatus
-	    :local dslDownstream
-	    :local dslDownstreamBits
-	    :local dslUpstream
-	    :local dslUpstreamBits
-
-	    :set dslStatus ($speedportStats->"dsl_status")
-	    :set dslDownstream ($speedportStats->"dsl_downstream")
-	    :set dslUpstream ($speedportStats->"dsl_upstream")
-
-	    :tonum dslDownstream
-	    :tonum dslUpstream
-
-	    :put ($dslStatus,$dslDownstream,$dslUpstream)
-	    
-	    # set queue limits
-	    :if ($dslStatus = "online" and $dslDownstream > 0 and $dslUpstream > 0) do={
-	        :set dslDownstreamBits ($dslDownstream * 1000)
-	        :set dslUpstreamBits ($dslUpstream * 1000)
-
-	        /queue tree set [find name="WAN Down"] max-limit=$dslDownstreamBits
-	        /queue tree set [find name="WAN Upload"] max-limit=$dslUpstreamBits
-	    }
-	}
-
 
 ```
 # Available data

@@ -1,5 +1,9 @@
 {
-    /system script run "speedport-stats"; global speedportStats;
+    # Load speedport-stats script
+    /system script run "speedport-stats"; global speedport; global fetchSpeedportStats;
+
+    # Fetch Speedport stats
+    $fetchSpeedportStats speedportAddress=192.168.1.1
 
     :local dslStatus
     :local dslDownstream
@@ -7,9 +11,9 @@
     :local dslUpstream
     :local dslUpstreamBits
 
-    :set dslStatus ($speedportStats->"dsl_status")
-    :set dslDownstream ($speedportStats->"dsl_downstream")
-    :set dslUpstream ($speedportStats->"dsl_upstream")
+    :set dslStatus ($speedport->"dsl_status")
+    :set dslDownstream ($speedport->"dsl_downstream")
+    :set dslUpstream ($speedport->"dsl_upstream")
 
     :tonum dslDownstream
     :tonum dslUpstream
@@ -23,6 +27,7 @@
 
         :local previousMaxLimitDown [/queue tree get [find name="WAN Down"] max-limit]
         :local previousMaxLimitUpload [/queue tree get [find name="WAN Upload"] max-limit]
+
         :tonum previousMaxLimitDown
         :tonum previousMaxLimitUpload
 
