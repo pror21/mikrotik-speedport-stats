@@ -7,10 +7,10 @@ Tested on RouterOS 7.6 and Speedport Plus (ISP: Cosmote, Firmware: 09022001.00.0
 Usage:
 ```
 # Load script
-/system script run "speedport-stats"; global speedport; global speedportFetchStats;
+/system script run "speedport-stats"; global speedport; global fetchSpeedportStats;
 
 # Fetch Speedport stats
-$speedportFetchStats "192.168.1.1"
+$fetchSpeedportStats "192.168.1.1"
 
 # Use data
 :put ($speedport->"dsl_status")
