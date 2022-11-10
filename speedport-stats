@@ -1,12 +1,12 @@
 {
     :global fetchSpeedportStats do={
-        :if (:typeof[$speedportAddress] = "nil" or $speedportAddress = "") do={ :error "Speedport address is missing" }
+        :if (:typeof[$1] = "nil" or $1 = "") do={ :error "Speedport address is missing" }
 
         # Load JSON Parser
         /system script run "JParseFunctions"; global JSONLoad; global JSONLoads; global JSONUnload
 
         # Request Speedport stats
-        :local result ([/tool fetch http-method=get mode=http http-header-field="Accept-Language: el-GR" url="http://$speedportAddress/data/Status.json" as-value output=user])
+        :local result ([/tool fetch http-method=get mode=http http-header-field="Accept-Language: el-GR" url="http://$1/data/Status.json" as-value output=user])
 
         :if ($result->"status" = "finished") do={
             # Parse JSON
