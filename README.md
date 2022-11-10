@@ -10,7 +10,7 @@ Usage:
 /system script run "speedport-stats"; global speedport; global speedportFetchStats;
 
 # Fetch Speedport stats
-$speedportFetchStats speedportAddress=192.168.1.1
+$speedportFetchStats "192.168.1.1"
 
 # Use data
 :put ($speedport->"dsl_status")
